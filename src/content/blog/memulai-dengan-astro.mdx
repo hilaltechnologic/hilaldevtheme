@@ -1,0 +1,204 @@
+---
+title: "Memulai dengan Astro: Framework Modern untuk Website Cepat"
+description: "Pelajari cara memulai dengan Astro, framework modern yang memungkinkan Anda membangun website yang sangat cepat dengan berbagai framework JavaScript."
+publishedDate: 2024-01-15
+author:
+  name: "Admin Blog"
+  url: "https://example.com/author/admin"
+tags: ["astro", "javascript", "web-development", "tutorial"]
+image: "/images/astro-tutorial.jpg"
+imageAlt: "Logo Astro dengan background kode"
+featured: true
+readingTime: "5 menit baca"
+---
+
+import { Image } from 'astro:assets';
+
+# Memulai dengan Astro: Framework Modern untuk Website Cepat
+
+Astro adalah framework web modern yang memungkinkan Anda membangun website yang sangat cepat dengan menggunakan komponen dari berbagai framework JavaScript seperti React, Vue, Svelte, dan lainnya.
+
+## Apa itu Astro?
+
+Astro adalah **static site generator** yang berfokus pada performa. Berbeda dengan framework lain, Astro menggunakan pendekatan "islands architecture" yang memungkinkan Anda untuk:
+
+- Membangun website dengan **zero JavaScript** secara default
+- Menggunakan komponen dari **berbagai framework** dalam satu project
+- Menghasilkan website yang **sangat cepat** dan SEO-friendly
+
+## Keunggulan Astro
+
+### 1. Performa Luar Biasa
+
+Astro menghasilkan HTML statis dengan minimal JavaScript, sehingga website Anda akan memuat dengan sangat cepat.
+
+```javascript
+// Contoh komponen Astro
+---
+const title = "Hello World";
+---
+
+<h1>{title}</h1>
+<p>Website ini dibuat dengan Astro!</p>
+```
+
+### 2. Multi-Framework Support
+
+Anda bisa menggunakan React, Vue, Svelte, dan framework lainnya dalam satu project:
+
+```astro
+---
+import ReactComponent from './ReactComponent.jsx';
+import VueComponent from './VueComponent.vue';
+import SvelteComponent from './SvelteComponent.svelte';
+---
+
+<ReactComponent />
+<VueComponent />
+<SvelteComponent />
+```
+
+### 3. SEO-Friendly
+
+Astro menghasilkan HTML statis yang sangat baik untuk SEO, dengan dukungan built-in untuk:
+
+- Meta tags
+- Open Graph
+- Schema.org JSON-LD
+- Sitemap otomatis
+
+## Cara Memulai
+
+### 1. Instalasi
+
+Buat project Astro baru dengan perintah:
+
+```bash
+npm create astro@latest my-astro-site
+cd my-astro-site
+npm install
+npm run dev
+```
+
+### 2. Struktur Project
+
+```
+my-astro-site/
+├── src/
+│   ├── components/
+│   ├── layouts/
+│   ├── pages/
+│   └── styles/
+├── public/
+├── astro.config.mjs
+└── package.json
+```
+
+### 3. Membuat Halaman
+
+Buat file baru di `src/pages/` untuk membuat halaman baru:
+
+```astro
+---
+// src/pages/about.astro
+const title = "Tentang Kami";
+---
+
+<html>
+  <head>
+    <title>{title}</title>
+  </head>
+  <body>
+    <h1>{title}</h1>
+    <p>Ini adalah halaman tentang kami.</p>
+  </body>
+</html>
+```
+
+## Integrasi dengan Framework Lain
+
+Astro memudahkan integrasi dengan framework populer:
+
+### React
+
+```bash
+npx astro add react
+```
+
+### Vue
+
+```bash
+npx astro add vue
+```
+
+### Tailwind CSS
+
+```bash
+npx astro add tailwind
+```
+
+## Tips dan Best Practices
+
+### 1. Gunakan Islands Architecture
+
+Hanya tambahkan JavaScript pada komponen yang benar-benar membutuhkannya:
+
+```astro
+---
+import InteractiveComponent from './InteractiveComponent.jsx';
+---
+
+<!-- Komponen statis -->
+<h1>Header Statis</h1>
+
+<!-- Komponen interaktif -->
+<InteractiveComponent client:load />
+```
+
+### 2. Optimasi Gambar
+
+Gunakan komponen `Image` bawaan Astro untuk optimasi gambar otomatis:
+
+```astro
+---
+import { Image } from 'astro:assets';
+import myImage from '../assets/image.jpg';
+---
+
+<Image src={myImage} alt="Deskripsi gambar" />
+```
+
+### 3. Manfaatkan Content Collections
+
+Untuk blog atau konten dinamis, gunakan Content Collections:
+
+```typescript
+// src/content/config.ts
+import { defineCollection, z } from 'astro:content';
+
+const blog = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    publishedDate: z.date(),
+  }),
+});
+
+export const collections = { blog };
+```
+
+## Kesimpulan
+
+Astro adalah pilihan yang sangat baik untuk membangun website modern yang cepat dan SEO-friendly. Dengan dukungan multi-framework dan fokus pada performa, Astro memungkinkan Anda untuk:
+
+- Membangun website yang sangat cepat
+- Menggunakan teknologi yang sudah Anda kuasai
+- Mengoptimalkan SEO dengan mudah
+- Mengurangi kompleksitas JavaScript
+
+Mulai eksplorasi Astro hari ini dan rasakan perbedaannya!
+
+---
+
+*Artikel ini adalah bagian dari seri tutorial web development. Ikuti blog kami untuk mendapatkan tips dan tutorial terbaru.*
