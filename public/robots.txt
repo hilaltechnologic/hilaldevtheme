@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://yourdomain.com/sitemap-index.xml
+
+# Disallow admin and private paths
+Disallow: /admin/
+Disallow: /private/
+Disallow: /api/
+Disallow: /cgi-bin/
+Disallow: /tmp/
+
+# Crawl-delay
+Crawl-delay: 10
+
+# Host
+Host: https://yourdomain.com

@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BlogLayout from '../../layouts/BlogLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post: CollectionEntry<'blog'>) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+// Calculate reading time if not provided
+if (!post.data.readingTime) {
+  const wordsPerMinute = 200;
+  const words = post.body.split(/\s+/).length;
+  post.data.readingTime = `${Math.ceil(words / wordsPerMinute)} menit baca`;
+}
+---
+
+<BlogLayout
+  title={post.data.title}
+  description={post.data.description}
+  publishedDate={post.data.publishedDate.toISOString()}
+  modifiedDate={post.data.modifiedDate?.toISOString()}
+  author={post.data.author.name}
+  tags={post.data.tags}
+  image={post.data.image}
+  readingTime={post.data.readingTime}
+>
+  <div class="prose-custom">
+    <Content />
+  </div>
+</BlogLayout>

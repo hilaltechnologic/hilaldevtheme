@@ -1,0 +1,104 @@
+---
+import type { SEOProps } from '../utils/seo';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const seo: SEOProps = {
+  title: 'Disclaimer',
+  description: 'Disclaimer dan penyangkalan tanggung jawab atas konten dan informasi yang disajikan di website ini.',
+  type: 'website',
+  noindex: false,
+};
+---
+
+<BaseLayout seo={seo}>
+  <Fragment slot="header">
+    <Header />
+  </Fragment>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 py-16">
+      <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          Disclaimer
+        </h1>
+        <p class="text-xl text-gray-800 dark:text-gray-100 max-w-3xl mx-auto">
+          Penyangkalan tanggung jawab atas konten dan informasi di website ini
+        </p>
+      </div>
+    </section>
+
+    <!-- Content Section -->
+    <section class="py-16 bg-white dark:bg-gray-900">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+          <div class="prose prose-lg prose-gray dark:prose-invert max-w-none">
+            
+            <!-- Placeholder content - Anda dapat mengganti dengan konten sebenarnya -->
+            <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6 mb-8">
+              <div class="flex items-start">
+                <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400 mt-1 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <h3 class="text-lg font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
+                    Konten Placeholder
+                  </h3>
+                  <p class="text-yellow-700 dark:text-yellow-300">
+                    Ini adalah template halaman Disclaimer. Silakan ganti konten di bawah ini dengan disclaimer yang sesuai dengan website Anda.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <h2>1. Informasi Umum</h2>
+            <p>[Isi dengan penjelasan umum tentang disclaimer website]</p>
+
+            <h2>2. Keakuratan Informasi</h2>
+            <p>[Isi dengan disclaimer tentang keakuratan informasi yang disajikan]</p>
+
+            <h2>3. Tanggung Jawab Konten</h2>
+            <p>[Isi dengan penyangkalan tanggung jawab atas konten]</p>
+
+            <h2>4. Link Eksternal</h2>
+            <p>[Isi dengan disclaimer tentang link ke website lain]</p>
+
+            <h2>5. Saran dan Rekomendasi</h2>
+            <p>[Isi dengan disclaimer tentang saran yang diberikan]</p>
+
+            <h2>6. Perubahan Informasi</h2>
+            <p>[Isi dengan disclaimer tentang perubahan informasi]</p>
+
+            <h2>7. Penggunaan Risiko Sendiri</h2>
+            <p>[Isi dengan disclaimer penggunaan atas risiko sendiri]</p>
+
+            <h2>8. Hak Cipta dan Merek Dagang</h2>
+            <p>[Isi dengan disclaimer tentang hak cipta]</p>
+
+            <h2>9. Keterbatasan Tanggung Jawab</h2>
+            <p>[Isi dengan keterbatasan tanggung jawab]</p>
+
+            <h2>10. Kontak</h2>
+            <p>[Isi dengan informasi kontak untuk pertanyaan terkait disclaimer]</p>
+
+            <div class="mt-12 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                <strong>Terakhir diperbarui:</strong> [Tanggal pembaruan terakhir]
+              </p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                Jika Anda memiliki pertanyaan tentang disclaimer ini, silakan hubungi kami melalui halaman <a href="/kontak" class="text-primary-600 dark:text-primary-400 hover:underline">kontak</a>.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Fragment slot="footer">
+    <Footer />
+  </Fragment>
+</BaseLayout>

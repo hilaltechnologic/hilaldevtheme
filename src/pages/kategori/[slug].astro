@@ -1,0 +1,239 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { generatePageSEO } from '../../utils/seo';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const publishedPosts = posts.filter((post: CollectionEntry<'blog'>) => !post.data.draft);
+  
+  // Extract all unique tags/categories
+  const allTags = new Set<string>();
+  publishedPosts.forEach((post: CollectionEntry<'blog'>) => {
+    post.data.tags?.forEach((tag: string) => allTags.add(tag));
+  });
+
+  return Array.from(allTags).map(tag => ({
+    params: { 
+      slug: tag.toLowerCase().replace(/\s+/g, '-') 
+    },
+    props: { 
+      tag,
+      posts: publishedPosts.filter((post: CollectionEntry<'blog'>) => 
+        post.data.tags?.includes(tag)
+      ).sort((a, b) => 
+        b.data.publishedDate.valueOf() - a.data.publishedDate.valueOf()
+      )
+    }
+  }));
+}
+
+interface Props {
+  tag: string;
+  posts: CollectionEntry<'blog'>[];
+}
+
+const { tag, posts } = Astro.props;
+
+// SEO
+const seo = generatePageSEO(
+  `Kategori: ${tag}`,
+  `Artikel dalam kategori ${tag}. Temukan semua konten terkait ${tag}.`,
+  `/kategori/${Astro.params.slug}`,
+  {
+    type: 'website',
+    keywords: [tag, 'kategori', 'artikel', 'blog']
+  }
+);
+
+// Format date
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('id-ID', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+
+// Pagination
+const postsPerPage = 9;
+const currentPage = 1; // For now, we'll implement simple pagination
+const totalPages = Math.ceil(posts.length / postsPerPage);
+const paginatedPosts = posts.slice(0, postsPerPage);
+---
+
+<BaseLayout seo={seo}>
+  <Fragment slot="header">
+    <Header />
+  </Fragment>
+
+  <main>
+    <!-- Breadcrumb -->
+    <nav class="bg-gray-50 dark:bg-gray-800 py-4" aria-label="Breadcrumb">
+      <div class="container mx-auto px-4">
+        <ol class="list-none p-0 inline-flex text-sm text-gray-800 dark:text-gray-200">
+          <li class="flex items-center">
+            <a href="/" class="hover:text-primary-600 dark:hover:text-primary-400">Beranda</a>
+            <svg class="w-3 h-3 mx-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+          </li>
+          <li class="flex items-center">
+            <a href="/kategori" class="hover:text-primary-600 dark:hover:text-primary-400">Kategori</a>
+            <svg class="w-3 h-3 mx-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+          </li>
+          <li>
+            <span class="text-gray-700 dark:text-gray-100" aria-current="page">{tag}</span>
+          </li>
+        </ol>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 py-16">
+      <div class="container mx-auto px-4 text-center">
+        <div class="max-w-4xl mx-auto">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-full mb-6">
+            <svg class="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+          </div>
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            {tag}
+          </h1>
+          <p class="text-xl text-gray-800 dark:text-gray-100 mb-6">
+            {posts.length} artikel dalam kategori ini
+          </p>
+          <a
+            href="/kategori"
+            class="inline-flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium"
+          >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Lihat Semua Kategori
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Articles Grid -->
+    <section class="py-16 bg-white dark:bg-gray-900">
+      <div class="container mx-auto px-4">
+        {paginatedPosts.length > 0 ? (
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {paginatedPosts.map((post: CollectionEntry<'blog'>) => (
+              <article class="card overflow-hidden transition-transform hover:scale-[1.02] animate-fade-in">
+                {post.data.image && (
+                  <div class="relative h-48">
+                    <img
+                      src={post.data.image}
+                      alt={post.data.imageAlt || post.data.title}
+                      class="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <div class="p-6">
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    {post.data.tags?.slice(0, 2).map((postTag: string) => (
+                      <a
+                        href={`/kategori/${postTag.toLowerCase().replace(/\s+/g, '-')}`}
+                        class={`px-3 py-1 text-sm rounded-full transition-colors ${
+                          postTag === tag
+                            ? 'bg-primary-600 text-white'
+                            : 'bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 hover:bg-primary-200 dark:hover:bg-primary-800'
+                        }`}
+                      >
+                        #{postTag}
+                      </a>
+                    ))}
+                  </div>
+                  <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    <a href={`/blog/${post.slug}`} class="hover:text-primary-600 dark:hover:text-primary-400">
+                      {post.data.title}
+                    </a>
+                  </h2>
+                  <p class="text-gray-800 dark:text-gray-200 mb-4 line-clamp-3">
+                    {post.data.description}
+                  </p>
+                  <div class="flex items-center justify-between text-sm text-gray-800 dark:text-gray-200">
+                    <span>{formatDate(post.data.publishedDate)}</span>
+                    {post.data.readingTime && (
+                      <span>{post.data.readingTime}</span>
+                    )}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="text-center py-12">
+            <div class="text-gray-400 dark:text-gray-600 mb-4">
+              <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              Belum Ada Artikel
+            </h3>
+            <p class="text-gray-800 dark:text-gray-200 mb-6">
+              Belum ada artikel dalam kategori "{tag}".
+            </p>
+            <a href="/blog" class="btn-primary">
+              Jelajahi Artikel Lainnya
+            </a>
+          </div>
+        )}
+
+        <!-- Pagination (if needed) -->
+        {totalPages > 1 && (
+          <div class="flex justify-center mt-12">
+            <nav class="flex items-center space-x-2">
+              <span class="px-3 py-2 text-sm text-gray-800 dark:text-gray-200">
+                Halaman {currentPage} dari {totalPages}
+              </span>
+            </nav>
+          </div>
+        )}
+      </div>
+    </section>
+
+    <!-- Related Categories -->
+    <section class="py-16 bg-gray-50 dark:bg-gray-800">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            Kategori Lainnya
+          </h2>
+          <p class="text-lg text-gray-800 dark:text-gray-200">
+            Jelajahi topik menarik lainnya
+          </p>
+        </div>
+        <div class="text-center">
+          <a href="/kategori" class="btn-primary text-lg px-8 py-3">
+            Lihat Semua Kategori
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Fragment slot="footer">
+    <Footer />
+  </Fragment>
+</BaseLayout>
+
+<style>
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Ad from '../components/Ad.astro';
 import { generateArticleSEO } from '../utils/seo';
 import { generateBreadcrumbSchema } from '../utils/schema';
 import { SITE_CONFIG } from '../config/site';
@@ -131,7 +132,13 @@ const breadcrumbSchema = generateBreadcrumbSchema([
 
     <!-- Article Content -->
     <div class="prose-custom max-w-4xl mx-auto">
+      <!-- Iklan sebelum konten -->
+      <Ad slot="header" type="display" className="mb-8" />
+      
       <slot />
+
+      <!-- Iklan setelah konten -->
+      <Ad slot="footer" type="in-article" className="mt-8" />
     </div>
 
     <!-- Article Footer -->
