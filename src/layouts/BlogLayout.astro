@@ -30,7 +30,7 @@ const {
 } = Astro.props;
 
 // Generate SEO props for blog post
-const seo = generateArticleSEO(title, description, Astro.url.pathname.split('/').pop() || '', {
+const seo = generateArticleSEO(title, description, Astro.url.pathname.replace(/^\/blog\//, ''), {
   publishedTime: publishedDate,
   modifiedTime: modifiedDate,
   author,

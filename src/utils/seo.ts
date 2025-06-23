@@ -149,10 +149,13 @@ export function generateArticleSEO(
   slug: string,
   options: Partial<SEOProps> = {}
 ): SEOProps {
+  // Clean slug - remove leading/trailing slashes and ensure it's just the slug
+  const cleanSlug = slug.replace(/^\/+|\/+$/g, '').replace(/^blog\//, '');
+  
   return {
     title,
     description,
-    canonical: `${SITE_CONFIG.baseUrl}/blog/${slug}`,
+    canonical: `${SITE_CONFIG.baseUrl}/blog/${cleanSlug}`,
     type: 'article',
     ...options
   };
