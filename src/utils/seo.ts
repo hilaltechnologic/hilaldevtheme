@@ -155,7 +155,7 @@ export function generateArticleSEO(
   return {
     title,
     description,
-    canonical: `${SITE_CONFIG.baseUrl}/blog/${cleanSlug}`,
+    canonical: `${SITE_CONFIG.baseUrl}/blog/${cleanSlug}/`,
     type: 'article',
     ...options
   };
