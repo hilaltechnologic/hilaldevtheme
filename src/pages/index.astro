@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import type { SEOProps } from '../utils/seo';
+import { generatePageSEO } from '../utils/seo';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -23,11 +23,15 @@ const recentPosts = posts
   .slice(0, 6);
 
 // SEO
-const seo: SEOProps = {
-  title: 'Beranda',
-  description: 'Blog modern tentang web development, teknologi, dan berbagai tips menarik. Dibuat dengan Astro dan Tailwind CSS.',
-  type: 'website'
-};
+const seo = generatePageSEO(
+  'Beranda',
+  'Blog modern tentang web development, teknologi, dan berbagai tips menarik. Dibuat dengan Astro dan Tailwind CSS.',
+  '/',
+  {
+    type: 'website',
+    keywords: ['blog', 'web development', 'teknologi', 'astro', 'tailwind css']
+  }
+);
 
 // Format date
 const formatDate = (date: Date) => {

@@ -6,13 +6,24 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://example.com', // Ganti dengan domain Anda
+  site: 'https://hilaldevtheme.pages.dev', // Ganti dengan domain Anda
   integrations: [
     tailwind({
       applyBaseStyles: false, // Kita akan menggunakan custom base styles
     }),
     mdx(),
-    sitemap()
+    sitemap({
+      filter: (page) => !page.includes('draft'), // Exclude draft pages
+      changefreq: 'weekly',
+      priority: 0.7,
+      lastmod: new Date(),
+      i18n: {
+        defaultLocale: 'id',
+        locales: {
+          id: 'id-ID'
+        }
+      }
+    })
   ],
   markdown: {
     shikiConfig: {

@@ -1,6 +1,8 @@
 ---
 import type { SEOProps } from '../utils/seo';
-import { generateSEOTags } from '../utils/seo';
+import { generateSEOTags, getCurrentUrl } from '../utils/seo';
+import { generateSchemaOrg, generateWebSiteSchema, generateOrganizationSchema } from '../utils/schema';
+import { SITE_CONFIG } from '../config/site';
 import '../styles/global.css';
 
 interface Props {
@@ -8,21 +10,45 @@ interface Props {
 }
 
 const { seo } = Astro.props;
-const seoTags = generateSEOTags(seo);
+const currentUrl = getCurrentUrl(Astro.url);
+const seoTags = generateSEOTags(seo, currentUrl);
+
+// Generate Schema.org JSON-LD
+const schemaData = generateSchemaOrg({
+  type: seo.type === 'article' ? 'BlogPosting' : 'WebPage',
+  title: seo.title,
+  description: seo.description,
+  url: seoTags.canonical,
+  image: seo.image,
+  datePublished: seo.publishedTime,
+  dateModified: seo.modifiedTime,
+  author: seo.author ? { name: seo.author, url: seo.author } : undefined
+});
+
+// Generate additional schemas for homepage
+const isHomepage = Astro.url.pathname === '/';
+const websiteSchema = isHomepage ? generateWebSiteSchema() : null;
+const organizationSchema = isHomepage ? generateOrganizationSchema() : null;
 ---
 
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang={SITE_CONFIG.language} class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href={SITE_CONFIG.favicon} />
     
-    <!-- SEO Tags -->
+    <!-- SEO Meta Tags -->
     <title>{seoTags.title}</title>
     <meta name="description" content={seoTags.description} />
-    {seoTags.canonical && <link rel="canonical" href={seoTags.canonical} />}
+    <meta name="keywords" content={seoTags.keywords} />
+    <meta name="author" content={seoTags.author} />
+    <meta name="publisher" content={seoTags.publisher} />
     <meta name="robots" content={seoTags.robots} />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href={seoTags.canonical} />
     
     <!-- Open Graph -->
     <meta property="og:title" content={seoTags.openGraph.title} />
@@ -32,6 +58,8 @@ const seoTags = generateSEOTags(seo);
     <meta property="og:image" content={seoTags.openGraph.image} />
     <meta property="og:image:alt" content={seoTags.openGraph.imageAlt} />
     <meta property="og:site_name" content={seoTags.openGraph.siteName} />
+    <meta property="og:locale" content={SITE_CONFIG.locale} />
+    
     {seoTags.openGraph.publishedTime && (
       <meta property="article:published_time" content={seoTags.openGraph.publishedTime} />
     )}
@@ -45,12 +73,44 @@ const seoTags = generateSEOTags(seo);
       <meta property="article:tag" content={tag} />
     ))}
     
-    <!-- Twitter -->
+    <!-- Twitter Card -->
     <meta name="twitter:card" content={seoTags.twitter.card} />
+    <meta name="twitter:site" content={seoTags.twitter.site} />
+    <meta name="twitter:creator" content={seoTags.twitter.creator} />
     <meta name="twitter:title" content={seoTags.twitter.title} />
     <meta name="twitter:description" content={seoTags.twitter.description} />
     <meta name="twitter:image" content={seoTags.twitter.image} />
     <meta name="twitter:image:alt" content={seoTags.twitter.imageAlt} />
+    
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="msapplication-TileColor" content="#3b82f6" />
+    
+    <!-- Google Site Verification (if configured) -->
+    {SITE_CONFIG.googleSiteVerification && (
+      <meta name="google-site-verification" content={SITE_CONFIG.googleSiteVerification} />
+    )}
+    
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
+    
+    <!-- Additional schemas for homepage -->
+    {websiteSchema && (
+      <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+    )}
+    {organizationSchema && (
+      <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+    )}
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title={SITE_CONFIG.rss.title} href="/rss.xml" />
+    
+    <!-- Sitemap -->
+    <link rel="sitemap" href="/sitemap-index.xml" />
     
     <!-- Dark mode script -->
     <script is:inline>
