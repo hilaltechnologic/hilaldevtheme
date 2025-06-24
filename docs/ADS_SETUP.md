@@ -142,13 +142,15 @@ import Ad from '../components/Ad.astro';
 
 ### 1. Development Mode
 
-Untuk melihat iklan saat development:
+Secara default, iklan tidak akan ditampilkan saat development. Untuk melihat iklan saat development:
 
 ```typescript
 settings: {
   showInDevelopment: true
 }
 ```
+
+**Catatan**: Komponen iklan hanya akan muncul ketika periklanan telah diaktifkan. Tidak ada placeholder yang ditampilkan ketika iklan tidak aktif.
 
 ### 2. GDPR Compliance
 

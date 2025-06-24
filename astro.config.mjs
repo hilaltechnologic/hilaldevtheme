@@ -30,5 +30,18 @@ export default defineConfig({
       theme: 'github-dark',
       wrap: true
     }
+  },
+  image: {
+    // Konfigurasi optimasi gambar dengan Sharp
+    service: {
+      entrypoint: 'astro/assets/services/sharp',
+      config: {
+        limitInputPixels: 268402689 // ~16K x 16K
+      }
+    },
+    // Format gambar yang didukung
+    formats: ['avif', 'webp', 'jpeg'],
+    // Kualitas default
+    quality: 80
   }
 });

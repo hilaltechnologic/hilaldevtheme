@@ -4,6 +4,7 @@ import BaseLayout from './BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Ad from '../components/Ad.astro';
+import OptimizedImage from '../components/OptimizedImage.astro';
 import { generateArticleSEO } from '../utils/seo';
 import { generateBreadcrumbSchema } from '../utils/schema';
 import { SITE_CONFIG } from '../config/site';
@@ -121,11 +122,15 @@ const breadcrumbSchema = generateBreadcrumbSchema([
     <!-- Featured Image -->
     {image && (
       <div class="max-w-4xl mx-auto mb-12">
-        <img
+        <OptimizedImage
           src={image}
           alt={title}
           class="w-full h-auto rounded-lg shadow-lg"
           loading="eager"
+          widths={[640, 768, 1024, 1280, 1536]}
+          sizes="(max-width: 1536px) 100vw, 1536px"
+          width={800}
+          height={400}
         />
       </div>
     )}

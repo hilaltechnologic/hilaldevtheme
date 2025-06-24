@@ -1,0 +1,120 @@
+---
+import { getImage } from 'astro:assets';
+
+interface Props {
+  src: string;
+  alt: string;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+  sizes?: string;
+  widths?: number[];
+  width?: number;
+  height?: number;
+}
+
+const {
+  src,
+  alt,
+  class: className = '',
+  loading = 'lazy',
+  sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
+  widths = [640, 768, 1024, 1280],
+  width,
+  height
+} = Astro.props;
+
+// Tentukan apakah gambar lokal atau remote
+const isRemote = src.startsWith('http');
+
+// Tentukan format berdasarkan browser support
+const formats = ['avif', 'webp'] as const;
+
+// Konfigurasi untuk getImage
+const getImageConfig = (format: string, targetWidth: number) => {
+  const config: any = {
+    src,
+    width: targetWidth,
+    format,
+    quality: format === 'avif' ? 80 : 85
+  };
+
+  // Untuk gambar remote, tambahkan dimensi jika tersedia
+  if (isRemote) {
+    if (width && height) {
+      config.width = targetWidth;
+      config.height = Math.round((height / width) * targetWidth);
+    } else {
+      // Fallback untuk gambar remote tanpa dimensi
+      config.inferSize = true;
+    }
+  }
+
+  return config;
+};
+
+// Generate gambar untuk setiap format dan width
+let images: any[] = [];
+let fallback: any;
+
+try {
+  images = await Promise.all(
+    formats.flatMap(format =>
+      widths.map(async targetWidth => {
+        const image = await getImage(getImageConfig(format, targetWidth));
+        return {
+          ...image,
+          width: targetWidth
+        };
+      })
+    )
+  );
+
+  // Generate fallback image (JPEG)
+  fallback = await getImage(getImageConfig('jpeg', Math.max(...widths)));
+} catch (error) {
+  console.warn('Error optimizing image:', src, error);
+  // Fallback ke gambar original jika optimasi gagal
+  fallback = {
+    src,
+    attributes: {
+      width: width || 800,
+      height: height || 400
+    }
+  };
+  images = [];
+}
+
+// Grup gambar berdasarkan format
+const imagesByFormat = formats.reduce((acc, format) => {
+  acc[format] = images.filter(img => img.options?.format === format);
+  return acc;
+}, {} as Record<typeof formats[number], typeof images>);
+---
+
+<picture>
+  {formats.map(format => (
+    <source
+      type={`image/${format}`}
+      srcset={imagesByFormat[format]
+        .map(img => `${img.src} ${img.width}w`)
+        .join(', ')}
+      sizes={sizes}
+    />
+  ))}
+  <img
+    src={fallback.src}
+    alt={alt}
+    class={className}
+    loading={loading}
+    width={fallback.attributes.width}
+    height={fallback.attributes.height}
+  />
+</picture>
+
+<style>
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+</style>

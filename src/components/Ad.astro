@@ -41,69 +41,64 @@ const showAds = shouldShowAds();
 const adConfig = showAds ? getAdConfig(slot) as AdConfig : null;
 ---
 
-<div class:list={[
-  'ad-container bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center',
-  slotClasses[slot],
-  className
-]}>
-  {!showAds && (
-    <div class="text-center p-4">
-      <p class="text-sm text-gray-600 dark:text-gray-400">Ad Placeholder</p>
-      <p class="text-xs text-gray-500 dark:text-gray-500">{slot} - {type}</p>
-    </div>
-  )}
+{showAds && (
+  <div class:list={[
+    'ad-container bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center',
+    slotClasses[slot],
+    className
+  ]}>
+    {adConfig?.platform === 'adsense' && (
+      <Fragment>
+        <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adConfig.publisherId}`}></script>
+        <ins
+          class="adsbygoogle"
+          style="display:block"
+          data-ad-client={adConfig.publisherId}
+          data-ad-slot={adConfig.slotId}
+          data-ad-format={type}
+          data-full-width-responsive="true"
+        ></ins>
+        <script is:inline define:vars={{ slot: adConfig.slotId }}>
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+      </Fragment>
+    )}
 
-  {showAds && adConfig?.platform === 'adsense' && (
-    <Fragment>
-      <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adConfig.publisherId}`}></script>
-      <ins
-        class="adsbygoogle"
-        style="display:block"
-        data-ad-client={adConfig.publisherId}
-        data-ad-slot={adConfig.slotId}
-        data-ad-format={type}
-        data-full-width-responsive="true"
-      ></ins>
-      <script is:inline define:vars={{ slot: adConfig.slotId }}>
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      </script>
-    </Fragment>
-  )}
-
-  {showAds && adConfig?.platform === 'medianet' && (
-    <div id={`mnet-${adConfig.slotId}`}>
-      <script async src={`//contextual.media.net/dmedianet.js?cid=${adConfig.siteId}`}></script>
-      <script is:inline define:vars={{ slotId: adConfig.slotId }}>
-        window._mNHandle = window._mNHandle || {};
-        window._mNHandle.queue = window._mNHandle.queue || [];
-        window._mNHandle.queue.push(function() {
-          window._mNDetails.loadTag(slotId);
-        });
-      </script>
-    </div>
-  )}
-
-  {showAds && adConfig?.platform === 'propellerads' && (
-    <div id={`propeller-${adConfig.zoneId}`}>
-      <script is:inline define:vars={{ zoneId: adConfig.zoneId }}>
-        window.propellerads = window.propellerads || { cmd: [] };
-        propellerads.cmd.push(function() {
-          propellerads.push({
-            zoneId: zoneId,
-            containerId: `propeller-${zoneId}`
+    {adConfig?.platform === 'medianet' && (
+      <div id={`mnet-${adConfig.slotId}`}>
+        <script async src={`//contextual.media.net/dmedianet.js?cid=${adConfig.siteId}`}></script>
+        <script is:inline define:vars={{ slotId: adConfig.slotId }}>
+          window._mNHandle = window._mNHandle || {};
+          window._mNHandle.queue = window._mNHandle.queue || [];
+          window._mNHandle.queue.push(function() {
+            window._mNDetails.loadTag(slotId);
           });
-        });
-      </script>
-    </div>
-  )}
+        </script>
+      </div>
+    )}
 
-  {showAds && adConfig?.platform === 'custom' && (
-    <Fragment>
-      <div set:html={adConfig.config.html} />
-      {adConfig.config.script && <script set:html={adConfig.config.script} />}
-    </Fragment>
-  )}
-</div>
+    {adConfig?.platform === 'propellerads' && (
+      <div id={`propeller-${adConfig.zoneId}`}>
+        <script is:inline define:vars={{ zoneId: adConfig.zoneId }}>
+          window.propellerads = window.propellerads || { cmd: [] };
+          propellerads.cmd.push(function() {
+            propellerads.push({
+              zoneId: zoneId,
+              containerId: `propeller-${zoneId}`
+            });
+          });
+        </script>
+      </div>
+    )}
+
+    {adConfig?.platform === 'custom' && (
+      <Fragment>
+        <div set:html={adConfig.config.html} />
+        {adConfig.config.script && <script set:html={adConfig.config.script} />}
+      </Fragment>
+    )}
+  </div>
+)}
 
 <style>
   .ad-container {
